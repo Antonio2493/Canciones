@@ -389,11 +389,12 @@
                     <div class="diagram-title">🎸 Guitarra</div>
                     <canvas id="guitar-canvas" width="180" height="200"></canvas>
                 </div>
-                <div class="diagram-card">
-                    <div class="diagram-title">🎹 Piano</div>
-                    <canvas id="piano-canvas" width="485" height="180"></canvas>
-                </div>
-            </div>
+                <div class="diagram-card" style="width: 100%; box-sizing: border-box; overflow: hidden;">
+    <div class="diagram-title">🎹 Piano</div>
+    <div style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 5px;">
+        <canvas id="piano-canvas" width="485" height="180"></canvas>
+    </div>
+</div>
             <button class="btn-secondary" onclick="document.getElementById('chord-helper-modal').style.display='none'">Cerrar</button>
         </div>
     </div>
