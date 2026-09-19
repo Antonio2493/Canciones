@@ -215,17 +215,19 @@
         .modal-content h3 { margin-top: 0; color: var(--text-color); text-align: center; }
 
         .chord-modal-box {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 800px;
-            border: 1px solid var(--border-color);
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 100%; /* Cambiado para que no rebase el celular */
+    box-sizing: border-box; /* Vital para que respete los márgenes */
+    border: 1px solid var(--border-color);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+}
         }
 
         .chord-modal-title { font-size: 1.8rem; color: var(--chord-color); font-weight: bold; margin: 0; }
