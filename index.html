@@ -515,51 +515,54 @@
             }
         }
 
-        function cargarCancion() {
-            cancionActualIndex = document.getElementById('song-select').value;
-            semitonosDesplazados = 0;
-            renderizar();
-        }
+   function cargarCancion() {
+    // Forzamos a que sea un número entero para evitar fallos de índice
+    cancionActualIndex = parseInt(document.getElementById('song-select').value, 10);
+    semitonosDesplazados = 0;
+    renderizar();
+}
 
-        function cambiarTono(cantidad) { semitonosDesplazados += cantidad; renderizar(); }
-        
-        function cambiarVista(vista) {
-            vistaActual = vista;
-            document.getElementById('btn-acordes').classList.toggle('active', vista === 'acordes');
-            document.getElementById('btn-guitarra').classList.toggle('active', vista === 'guitarra');
-            document.getElementById('btn-piano').classList.toggle('active', vista === 'piano');
-            renderizar();
-        }
-        
-        function cambiarFuente(fuenteCSS) { document.documentElement.style.setProperty('--font-family', fuenteCSS); }
-        
-        function cambiarTamano(cambio) {
-            tamanoActual += cambio;
-            if (tamanoActual < 0.8) tamanoActual = 0.8; if (tamanoActual > 1.8) tamanoActual = 1.8;
-            document.documentElement.style.setProperty('--font-size-base', tamanoActual + 'rem');
-        }
+function abrirModalCrear() {
+    const modal = document.getElementById('song-modal');
+    if (!modal) return;
+    
+    document.getElementById('modal-title').innerText = "➕ Agregar Nueva Canción";
+    document.getElementById('edit-id').value = "";
+    document.getElementById('input-titulo').value = ""; 
+    document.getElementById('input-artista').value = "";
+    document.getElementById('input-tono').value = "D"; 
+    document.getElementById('input-letra').value = "";
+    document.getElementById('input-guitarra').value = ""; 
+    document.getElementById('input-piano').value = "";
+    
+    // Forzamos la visualización en flex
+    modal.style.display = 'flex';
+}
 
-        function abrirModalCrear() {
-            document.getElementById('modal-title').innerText = "➕ Agregar Nueva Canción";
-            document.getElementById('edit-id').value = "";
-            document.getElementById('input-titulo').value = ""; document.getElementById('input-artista').value = "";
-            document.getElementById('input-tono').value = "D"; document.getElementById('input-letra').value = "";
-            document.getElementById('input-guitarra').value = ""; document.getElementById('input-piano').value = "";
-            document.getElementById('song-modal').style.display = 'flex';
-        }
+function abrirModalEditar() {
+    if(canciones.length === 0) return;
+    let song = canciones[cancionActualIndex];
+    const modal = document.getElementById('song-modal');
+    if (!modal) return;
 
-        function abrirModalEditar() {
-            if(canciones.length === 0) return;
-            let song = canciones[cancionActualIndex];
-            document.getElementById('modal-title').innerText = "✏️ Editar Canción";
-            document.getElementById('edit-id').value = song.idDoc;
-            document.getElementById('input-titulo').value = song.titulo; document.getElementById('input-artista').value = song.artista;
-            document.getElementById('input-tono').value = song.tonoOriginal; document.getElementById('input-letra').value = song.letra;
-            document.getElementById('input-guitarra').value = song.guitarra || ""; document.getElementById('input-piano').value = song.piano || "";
-            document.getElementById('song-modal').style.display = 'flex';
-        }
+    document.getElementById('modal-title').innerText = "✏️ Editar Canción";
+    document.getElementById('edit-id').value = song.idDoc;
+    document.getElementById('input-titulo').value = song.titulo; 
+    document.getElementById('input-artista').value = song.artista || "";
+    document.getElementById('input-tono').value = song.tonoOriginal || "C"; 
+    document.getElementById('input-letra').value = song.letra || "";
+    document.getElementById('input-guitarra').value = song.guitarra || ""; 
+    document.getElementById('input-piano').value = song.piano || "";
+    
+    // Forzamos la visualización en flex
+    modal.style.display = 'flex';
+}
 
-        function cerrarModal() { document.getElementById('song-modal').style.display = 'none'; }
+function cerrarModal() { 
+    const modal = document.getElementById('song-modal');
+    if (modal) modal.style.display = 'none'; 
+}
+
 
         async function guardarCancionNube() {
             let idDoc = document.getElementById('edit-id').value;
