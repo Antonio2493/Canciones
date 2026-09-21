@@ -85,6 +85,70 @@ function cambiarVista(vista) {
     renderizar();
 }
 
+// Variable para guardar el ID del documento en Firebase donde guardaremos este historial único
+let idDocHistorialCantadas = null;
+
+// 1. Abrir el modal de registro rápido (o puedes escribir directo en el grande)
+function abrirModalRegistrarCancionCantada() {
+    // Abrimos directamente el historial grande para que puedan añadirla a la lista
+    abrirModalHistorialCantadas();
+}
+
+// 2. Abrir el modal del historial grande y cargarlo desde Firestore
+async function abrirModalHistorialCantadas() {
+    document.getElementById('modal-historial-cantadas').style.display = 'flex';
+    const textarea = document.getElementById('input-historial-gigante');
+    textarea.value = "Cargando historial desde la nube...";
+
+    try {
+        // Buscamos en una colección llamada "configuracion" o "historial" un documento general
+        const snapshot = await window.getDocs(window.collection(window.db, "historial_cantadas"));
+        
+        if (!snapshot.empty) {
+            // Si ya existe el documento, tomamos el primero
+            const docData = snapshot.docs[0];
+            idDocHistorialCantadas = docData.id;
+            textarea.value = docData.data().contenido || "";
+        } else {
+            // Si no existe aún, dejamos el campo listo para escribir el primero
+            idDocHistorialCantadas = null;
+            textarea.value = "--- HISTORIAL DE CANCIONES Y SUGERENCIAS ---\n\n";
+        }
+    } catch (error) {
+        console.error("Error al cargar el historial: ", error);
+        textarea.value = "Error al conectar con la nube.";
+    }
+}
+
+function cerrarModalHistorialCantadas() {
+    document.getElementById('modal-historial-cantadas').style.display = 'none';
+}
+
+// 3. Guardar los cambios del historial gigante en la nube
+async function guardarHistorialCantadasNube() {
+    const contenido = document.getElementById('input-historial-gigante').value;
+
+    try {
+        if (idDocHistorialCantadas) {
+            // Si ya existe, lo actualizamos
+            const docRef = window.doc(window.db, "historial_cantadas", idDocHistorialCantadas);
+            await window.updateDoc(docRef, { contenido: contenido });
+        } else {
+            // Si no existe, lo creamos por primera vez
+            const nuevoDoc = await window.addDoc(window.collection(window.db, "historial_cantadas"), {
+                contenido: contenido,
+                actualizado: new Date().toISOString()
+            });
+            idDocHistorialCantadas = nuevoDoc.id;
+        }
+        alert("¡Historial y sugerencias guardados correctamente en la nube!");
+    } catch (error) {
+        console.error("Error al guardar el historial: ", error);
+        alert("Hubo un error al guardar en la nube.");
+    }
+}
+
+
 function cambiarFuente(fuenteCSS) { document.documentElement.style.setProperty('--font-family', fuenteCSS); }
 
 function cambiarTamano(cambio) {
