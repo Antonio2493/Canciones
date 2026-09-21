@@ -77,7 +77,7 @@
         .container {
             width: 100%;
             overflow-x: auto; /* Permite hacer scroll horizontal en celulares */
-            -webkit-overflow-scrolling: touch;
+    -webkit-overflow-scrolling: touch;
             max-width: 750px;
             background: var(--card-bg);
             padding: 25px;
@@ -212,22 +212,20 @@
             gap: 12px;
         }
 
-        .modal-content h3 { margin-top: 0; color: var(--text-color); text-align: center;
-        }
+        .modal-content h3 { margin-top: 0; color: var(--text-color); text-align: center; }
 
         .chord-modal-box {
-    background: var(--card-bg);
-    padding: 20px;
-    border-radius: 16px;
-    width: 100%;
-    max-width: 100%; /* Cambiado para que no rebase el celular */
-    box-sizing: border-box; /* Vital para que respete los márgenes */
-    border: 1px solid var(--border-color);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
         }
 
         .chord-modal-title { font-size: 1.8rem; color: var(--chord-color); font-weight: bold; margin: 0; }
@@ -391,12 +389,11 @@
                     <div class="diagram-title">🎸 Guitarra</div>
                     <canvas id="guitar-canvas" width="180" height="200"></canvas>
                 </div>
-                <div class="diagram-card" style="width: 100%; box-sizing: border-box; overflow: hidden;">
-    <div class="diagram-title">🎹 Piano</div>
-    <div style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 5px;">
-        <canvas id="piano-canvas" width="485" height="180"></canvas>
-    </div>
-</div>
+                <div class="diagram-card">
+                    <div class="diagram-title">🎹 Piano</div>
+                    <canvas id="piano-canvas" width="485" height="180"></canvas>
+                </div>
+            </div>
             <button class="btn-secondary" onclick="document.getElementById('chord-helper-modal').style.display='none'">Cerrar</button>
         </div>
     </div>
@@ -407,36 +404,35 @@
             <h3 id="modal-title">Nueva Canción</h3>
             <input type="hidden" id="edit-id" value="">
             
-<div class="form-group">
-    <label for="input-titulo">Título:</label>
-    <input type="text" id="input-titulo" placeholder="Ej: Renuévame">
-</div>
+            <div class="form-group">
+                <label>Título:</label>
+                <input type="text" id="input-titulo" placeholder="Ej: Renuévame">
+            </div>
 
-<div class="form-group">
-    <label for="input-artista">Artista / Intérprete:</label>
-    <input type="text" id="input-artista" placeholder="Ej: Marcos Witt">
-</div>
+            <div class="form-group">
+                <label>Artista / Intérprete:</label>
+                <input type="text" id="input-artista" placeholder="Ej: Marcos Witt">
+            </div>
 
-<div class="form-group">
-    <label for="input-tono">Tono Original (Ej: D, G, Am):</label>
-    <input type="text" id="input-tono" placeholder="D">
-</div>
+            <div class="form-group">
+                <label>Tono Original (Ej: D, G, Am):</label>
+                <input type="text" id="input-tono" placeholder="D">
+            </div>
 
-<div class="form-group">
-    <label for="input-letra">Letra y Acordes:</label>
-    <textarea id="input-letra" rows="10" placeholder="Acordes arriba, letra abajo..."></textarea>
-</div>
+            <div class="form-group">
+                <label>Letra y Acordes:</label>
+                <textarea id="input-letra" rows="10" placeholder="Acordes arriba, letra abajo..."></textarea>
+            </div>
 
-<div class="form-group">
-    <label for="input-guitarra">Tablatura de Guitarra (Opcional):</label>
-    <textarea id="input-guitarra" rows="2" placeholder="e|-------------------|"></textarea>
-</div>
+            <div class="form-group">
+                <label>Tablatura de Guitarra (Opcional):</label>
+                <textarea id="input-guitarra" rows="2" placeholder="e|-------------------|"></textarea>
+            </div>
 
-<div class="form-group">
-    <label for="input-piano">Notas de Piano (Opcional):</label>
-    <textarea id="input-piano" rows="2" placeholder="D - A - Bm"></textarea>
-</div>
-
+            <div class="form-group">
+                <label>Notas de Piano (Opcional):</label>
+                <textarea id="input-piano" rows="2" placeholder="D - A - Bm"></textarea>
+            </div>
 
             <div class="form-actions">
                 <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
@@ -516,54 +512,51 @@
             }
         }
 
-   function cargarCancion() {
-    // Forzamos a que sea un número entero para evitar fallos de índice
-    cancionActualIndex = parseInt(document.getElementById('song-select').value, 10);
-    semitonosDesplazados = 0;
-    renderizar();
-}
+        function cargarCancion() {
+            cancionActualIndex = document.getElementById('song-select').value;
+            semitonosDesplazados = 0;
+            renderizar();
+        }
 
-function abrirModalCrear() {
-    const modal = document.getElementById('song-modal');
-    if (!modal) return;
-    
-    document.getElementById('modal-title').innerText = "➕ Agregar Nueva Canción";
-    document.getElementById('edit-id').value = "";
-    document.getElementById('input-titulo').value = ""; 
-    document.getElementById('input-artista').value = "";
-    document.getElementById('input-tono').value = "D"; 
-    document.getElementById('input-letra').value = "";
-    document.getElementById('input-guitarra').value = ""; 
-    document.getElementById('input-piano').value = "";
-    
-    // Forzamos la visualización en flex
-    modal.style.display = 'flex';
-}
+        function cambiarTono(cantidad) { semitonosDesplazados += cantidad; renderizar(); }
+        
+        function cambiarVista(vista) {
+            vistaActual = vista;
+            document.getElementById('btn-acordes').classList.toggle('active', vista === 'acordes');
+            document.getElementById('btn-guitarra').classList.toggle('active', vista === 'guitarra');
+            document.getElementById('btn-piano').classList.toggle('active', vista === 'piano');
+            renderizar();
+        }
+        
+        function cambiarFuente(fuenteCSS) { document.documentElement.style.setProperty('--font-family', fuenteCSS); }
+        
+        function cambiarTamano(cambio) {
+            tamanoActual += cambio;
+            if (tamanoActual < 0.8) tamanoActual = 0.8; if (tamanoActual > 1.8) tamanoActual = 1.8;
+            document.documentElement.style.setProperty('--font-size-base', tamanoActual + 'rem');
+        }
 
-function abrirModalEditar() {
-    if(canciones.length === 0) return;
-    let song = canciones[cancionActualIndex];
-    const modal = document.getElementById('song-modal');
-    if (!modal) return;
+        function abrirModalCrear() {
+            document.getElementById('modal-title').innerText = "➕ Agregar Nueva Canción";
+            document.getElementById('edit-id').value = "";
+            document.getElementById('input-titulo').value = ""; document.getElementById('input-artista').value = "";
+            document.getElementById('input-tono').value = "D"; document.getElementById('input-letra').value = "";
+            document.getElementById('input-guitarra').value = ""; document.getElementById('input-piano').value = "";
+            document.getElementById('song-modal').style.display = 'flex';
+        }
 
-    document.getElementById('modal-title').innerText = "✏️ Editar Canción";
-    document.getElementById('edit-id').value = song.idDoc;
-    document.getElementById('input-titulo').value = song.titulo; 
-    document.getElementById('input-artista').value = song.artista || "";
-    document.getElementById('input-tono').value = song.tonoOriginal || "C"; 
-    document.getElementById('input-letra').value = song.letra || "";
-    document.getElementById('input-guitarra').value = song.guitarra || ""; 
-    document.getElementById('input-piano').value = song.piano || "";
-    
-    // Forzamos la visualización en flex
-    modal.style.display = 'flex';
-}
+        function abrirModalEditar() {
+            if(canciones.length === 0) return;
+            let song = canciones[cancionActualIndex];
+            document.getElementById('modal-title').innerText = "✏️ Editar Canción";
+            document.getElementById('edit-id').value = song.idDoc;
+            document.getElementById('input-titulo').value = song.titulo; document.getElementById('input-artista').value = song.artista;
+            document.getElementById('input-tono').value = song.tonoOriginal; document.getElementById('input-letra').value = song.letra;
+            document.getElementById('input-guitarra').value = song.guitarra || ""; document.getElementById('input-piano').value = song.piano || "";
+            document.getElementById('song-modal').style.display = 'flex';
+        }
 
-function cerrarModal() { 
-    const modal = document.getElementById('song-modal');
-    if (modal) modal.style.display = 'none'; 
-}
-
+        function cerrarModal() { document.getElementById('song-modal').style.display = 'none'; }
 
         async function guardarCancionNube() {
             let idDoc = document.getElementById('edit-id').value;
