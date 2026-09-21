@@ -55,6 +55,8 @@
                 <button class="btn-secondary" onclick="abrirModalRepertorio()">📅 Repertorio Semanal</button>
                 <!-- Botón para abrir el creador de listas personalizadas -->
                 <button class="btn-secondary" onclick="abrirModalListaPersonalizada()">📝 Nueva Lista Personalizada</button>
+                <!-- Botón para ver las listas que ya guardaste -->
+                <button class="btn-secondary" onclick="abrirModalVerListas()">📂 Ver Listas Guardadas</button>
                 <button class="btn-danger" onclick="eliminarCancionActual()">🗑️ Eliminar</button>
             </div>
 
@@ -145,6 +147,24 @@ Miércoles:
             <button class="btn-secondary" onclick="document.getElementById('chord-helper-modal').style.display='none'">Cerrar</button>
         </div>
     </div>
+
+    <!-- Modal para Mostrar las Listas Guardadas -->
+<div id="modal-ver-listas" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <h3>📂 Listas Guardadas en la Nube</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Aquí puedes consultar las listas que has creado previamente.</p>
+        
+        <!-- Contenedor donde aparecerán las listas descargadas de Firestore -->
+        <div id="contenedor-listas-guardadas" style="max-height: 280px; overflow-y: auto; margin: 15px 0; text-align: left; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px;">
+            <p style="text-align:center; color: var(--text-muted); font-size: 0.9rem;">Cargando listas...</p>
+        </div>
+
+        <div class="form-actions" style="margin-top: 15px;">
+            <button class="btn-secondary" onclick="cerrarModalVerListas()">Cerrar</button>
+        </div>
+    </div>
+</div>
+    
 
     <!-- Modal para Crear y Guardar Lista Personalizada -->
 <div id="modal-lista-personalizada" class="modal">
