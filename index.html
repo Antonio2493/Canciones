@@ -123,12 +123,12 @@
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    margin-top: 10px;
-    padding-bottom: 10px;
+    margin-top: 5px;
+    padding-bottom: 5px;
 }
 
 #piano-canvas {
-    min-width: 550px; /* Coincide con el ancho del canvas */
+    min-width: 550px;
     height: auto;
     display: block;
 }
@@ -231,16 +231,17 @@
 
         .chord-modal-box {
             background: var(--card-bg);
-            padding: 25px;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 800px;
-            border: 1px solid var(--border-color);
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 16px;
+    width: 95%;
+    max-width: 650px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+    box-sizing: border-box;
         }
 
         .chord-modal-title { font-size: 1.8rem; color: var(--chord-color); font-weight: bold; margin: 0; }
@@ -407,7 +408,10 @@
                 </div>
                 <div class="diagram-card">
                     <div class="diagram-title">🎹 Piano</div>
-                    <canvas id="piano-canvas" width="550" height="180"></canvas>
+                    <!-- Contenedor con scroll horizontal para el piano en celulares -->
+                    <div class="piano-scroll-container">
+                        <canvas id="piano-canvas" width="550" height="180"></canvas>
+                    </div>
                 </div>
             </div>
             <button class="btn-secondary" onclick="document.getElementById('chord-helper-modal').style.display='none'">Cerrar</button>
