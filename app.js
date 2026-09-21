@@ -85,60 +85,6 @@ function cambiarVista(vista) {
     renderizar();
 }
 
-// Abrir el modal y cargar desde Firebase
-async function abrirModalHistorialCantadas() {
-    const modal = document.getElementById('modal-historial-cantadas');
-    if (modal) {
-        modal.style.display = 'flex';
-    } else {
-        console.error("No se encontró el modal-historial-cantadas en el HTML");
-        return;
-    }
-
-    const textarea = document.getElementById('input-historial-gigante');
-    textarea.value = "Cargando historial desde la nube...";
-
-    try {
-        const docRef = window.doc(window.db, "historial_cantadas", "principal");
-        const docSnap = await window.getDoc(docRef);
-        
-        if (docSnap.exists()) {
-            textarea.value = docSnap.data().contenido || "";
-        } else {
-            textarea.value = "--- HISTORIAL DE CANCIONES Y SUGERENCIAS ---\n\n(Escribe aquí tus canciones cantadas o ideas para futuros repertorios)";
-        }
-    } catch (error) {
-        console.error("Error detallado al conectar con Firestore:", error);
-        textarea.value = "Error al conectar con la nube. Revisa que tus reglas de Firebase permitan lectura/escritura.";
-    }
-}
-
-function cerrarModalHistorialCantadas() {
-    document.getElementById('modal-historial-cantadas').style.display = 'none';
-}
-
-async function guardarHistorialCantadasNube() {
-    const contenido = document.getElementById('input-historial-gigante').value;
-
-    try {
-        const docRef = window.doc(window.db, "historial_cantadas", "principal");
-        await window.setDoc(docRef, { 
-            contenido: contenido,
-            ultimaActualizacion: new Date().toISOString()
-        }, { merge: true });
-
-        alert("¡Historial guardado correctamente en la nube!");
-    } catch (error) {
-        console.error("Error al guardar en la nube: ", error);
-        alert("Hubo un error al guardar los cambios.");
-    }
-}
-
-// Hacemos las funciones globales por seguridad para que el HTML las encuentre sin fallo
-window.abrirModalHistorialCantadas = abrirModalHistorialCantadas;
-window.cerrarModalHistorialCantadas = cerrarModalHistorialCantadas;
-window.guardarHistorialCantadasNube = guardarHistorialCantadasNube;
-
 function cambiarFuente(fuenteCSS) { document.documentElement.style.setProperty('--font-family', fuenteCSS); }
 
 function cambiarTamano(cambio) {
