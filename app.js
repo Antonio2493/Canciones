@@ -85,45 +85,43 @@ function cambiarVista(vista) {
     renderizar();
 }
 
-// Variable global para mantener el ID fijo
-const ID_DOCUMENTO_HISTORIAL = "principal";
-
+// Abrir el modal y cargar desde Firebase
 async function abrirModalHistorialCantadas() {
-    document.getElementById('modal-historial-cantadas').style.display = 'flex';
+    const modal = document.getElementById('modal-historial-cantadas');
+    if (modal) {
+        modal.style.display = 'flex';
+    } else {
+        console.error("No se encontró el modal-historial-cantadas en el HTML");
+        return;
+    }
+
     const textarea = document.getElementById('input-historial-gigante');
-    textarea.value = "Cargando historial...";
+    textarea.value = "Cargando historial desde la nube...";
 
     try {
-        // Apuntamos directamente a un documento fijo llamado "principal"
-        const docRef = window.doc(window.db, "historial_cantadas", ID_DOCUMENTO_HISTORIAL);
+        const docRef = window.doc(window.db, "historial_cantadas", "principal");
         const docSnap = await window.getDoc(docRef);
         
         if (docSnap.exists()) {
-            // Si ya tiene texto guardado, lo cargamos
             textarea.value = docSnap.data().contenido || "";
         } else {
-            // Si el documento aún no existe, dejamos una plantilla inicial limpia
-            textarea.value = "--- HISTORIAL DE CANCIONES Y SUGERENCIAS ---\n\n";
+            textarea.value = "--- HISTORIAL DE CANCIONES Y SUGERENCIAS ---\n\n(Escribe aquí tus canciones cantadas o ideas para futuros repertorios)";
         }
     } catch (error) {
-        console.error("Error al cargar:", error);
-        textarea.value = "Error al conectar con la nube. Revisa la consola.";
+        console.error("Error detallado al conectar con Firestore:", error);
+        textarea.value = "Error al conectar con la nube. Revisa que tus reglas de Firebase permitan lectura/escritura.";
     }
 }
-
 
 function cerrarModalHistorialCantadas() {
     document.getElementById('modal-historial-cantadas').style.display = 'none';
 }
 
-// 3. Guardar los cambios del historial gigante en la nube
 async function guardarHistorialCantadasNube() {
     const contenido = document.getElementById('input-historial-gigante').value;
 
     try {
-        const docRef = window.doc(window.db, "historial_cantadas", ID_DOCUMENTO_HISTORIAL);
-        
-        // setDoc con { merge: true } crea el documento si no existe, o lo actualiza si ya existe
+        const docRef = window.doc(window.db, "historial_cantadas", "principal");
         await window.setDoc(docRef, { 
             contenido: contenido,
             ultimaActualizacion: new Date().toISOString()
@@ -131,12 +129,16 @@ async function guardarHistorialCantadasNube() {
 
         alert("¡Historial guardado correctamente en la nube!");
     } catch (error) {
-        console.error("Error al guardar: ", error);
-        alert("Hubo un error al guardar en la nube.");
+        console.error("Error al guardar en la nube: ", error);
+        alert("Hubo un error al guardar los cambios.");
     }
 }
 
-
+// Hacemos las funciones globales por seguridad para que el HTML las encuentre sin fallo
+window.abrirModalHistorialCantadas = abrirModalHistorialCantadas;
+window.cerrarModalHistorialCantadas = cerrarModalHistorialCantadas;
+window.guardarHistorialCantadasNube = guardarHistorialCantadasNube;
+}
 
 function cambiarFuente(fuenteCSS) { document.documentElement.style.setProperty('--font-family', fuenteCSS); }
 
