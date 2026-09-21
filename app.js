@@ -138,7 +138,6 @@ async function guardarHistorialCantadasNube() {
 window.abrirModalHistorialCantadas = abrirModalHistorialCantadas;
 window.cerrarModalHistorialCantadas = cerrarModalHistorialCantadas;
 window.guardarHistorialCantadasNube = guardarHistorialCantadasNube;
-}
 
 function cambiarFuente(fuenteCSS) { document.documentElement.style.setProperty('--font-family', fuenteCSS); }
 
