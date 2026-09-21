@@ -139,17 +139,28 @@ async function eliminarCancionActual() {
     }
 }
 
-// Abrir el modal de repertorio y cargar lo que esté guardado
+// 1. Abrir el modal y cargar inmediatamente lo que está guardado en Firestore
 async function abrirModalRepertorio() {
     document.getElementById('modal-repertorio').style.display = 'flex';
-    
-    // Intentar cargar el texto guardado previamente desde Firestore
+    let textarea = document.getElementById('input-repertorio-libre');
+    textarea.value = "Cargando repertorio...";
+
     try {
+        // Usamos un ID fijo llamado "repertorio_semanal" para no crear documentos infinitos
         const docRef = window.doc(window.db, "configuracion", "repertorio_semanal");
-        // Nota: Esto asume una lectura rápida o puedes usar un snapshot si prefieres
-        // Aquí cargamos el documento si existe
-    } catch (e) {
-        console.log("No hay repertorio previo o cargando...");
+        const docSnap = await window.getDoc(docRef);
+
+        if (docSnap.exists()) {
+            // Si ya hay algo guardado, lo colocamos en el cuadro de texto
+            textarea.value = docSnap.data().contenido || "";
+        } else {
+            // Si está vacío por primera vez
+            textarea.value = "";
+        }
+    } catch (error) {
+        console.error("Error al cargar el repertorio:", error);
+        textarea.value = "";
+        alert("Hubo un error al cargar el repertorio desde la nube.");
     }
 }
 
@@ -157,17 +168,19 @@ function cerrarModalRepertorio() {
     document.getElementById('modal-repertorio').style.display = 'none';
 }
 
-// Guardar el texto libre en la nube
+// 2. Guardar o actualizar siempre sobre el mismo documento único
 async function guardarRepertorioLibre() {
     let textoLibre = document.getElementById('input-repertorio-libre').value;
     
     try {
-        // Guardamos en un documento fijo llamado "repertorio_semanal" dentro de una colección o la misma base
-        await window.addDoc(window.collection(window.db, "repertorio_semanal"), {
+        // setDoc sobrescribe o crea el documento único "repertorio_semanal" en la colección "configuracion"
+        const docRef = window.doc(window.db, "configuracion", "repertorio_semanal");
+        await window.setDoc(docRef, {
             contenido: textoLibre,
             fechaActualizacion: new Date().toISOString()
         });
-        alert("¡Repertorio semanal guardado con éxito!");
+        
+        alert("¡Repertorio semanal actualizado con éxito!");
         cerrarModalRepertorio();
     } catch (error) {
         console.error("Error al guardar el repertorio: ", error);
