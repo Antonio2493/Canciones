@@ -85,40 +85,32 @@ function cambiarVista(vista) {
     renderizar();
 }
 
-// Variable para guardar el ID del documento en Firebase donde guardaremos este historial único
-let idDocHistorialCantadas = null;
+// Variable global para mantener el ID fijo
+const ID_DOCUMENTO_HISTORIAL = "principal";
 
-// 1. Abrir el modal de registro rápido (o puedes escribir directo en el grande)
-function abrirModalRegistrarCancionCantada() {
-    // Abrimos directamente el historial grande para que puedan añadirla a la lista
-    abrirModalHistorialCantadas();
-}
-
-// 2. Abrir el modal del historial grande y cargarlo desde Firestore
 async function abrirModalHistorialCantadas() {
     document.getElementById('modal-historial-cantadas').style.display = 'flex';
     const textarea = document.getElementById('input-historial-gigante');
-    textarea.value = "Cargando historial desde la nube...";
+    textarea.value = "Cargando historial...";
 
     try {
-        // Buscamos en una colección llamada "configuracion" o "historial" un documento general
-        const snapshot = await window.getDocs(window.collection(window.db, "historial_cantadas"));
+        // Apuntamos directamente a un documento fijo llamado "principal"
+        const docRef = window.doc(window.db, "historial_cantadas", ID_DOCUMENTO_HISTORIAL);
+        const docSnap = await window.getDoc(docRef);
         
-        if (!snapshot.empty) {
-            // Si ya existe el documento, tomamos el primero
-            const docData = snapshot.docs[0];
-            idDocHistorialCantadas = docData.id;
-            textarea.value = docData.data().contenido || "";
+        if (docSnap.exists()) {
+            // Si ya tiene texto guardado, lo cargamos
+            textarea.value = docSnap.data().contenido || "";
         } else {
-            // Si no existe aún, dejamos el campo listo para escribir el primero
-            idDocHistorialCantadas = null;
+            // Si el documento aún no existe, dejamos una plantilla inicial limpia
             textarea.value = "--- HISTORIAL DE CANCIONES Y SUGERENCIAS ---\n\n";
         }
     } catch (error) {
-        console.error("Error al cargar el historial: ", error);
-        textarea.value = "Error al conectar con la nube.";
+        console.error("Error al cargar:", error);
+        textarea.value = "Error al conectar con la nube. Revisa la consola.";
     }
 }
+
 
 function cerrarModalHistorialCantadas() {
     document.getElementById('modal-historial-cantadas').style.display = 'none';
@@ -129,24 +121,21 @@ async function guardarHistorialCantadasNube() {
     const contenido = document.getElementById('input-historial-gigante').value;
 
     try {
-        if (idDocHistorialCantadas) {
-            // Si ya existe, lo actualizamos
-            const docRef = window.doc(window.db, "historial_cantadas", idDocHistorialCantadas);
-            await window.updateDoc(docRef, { contenido: contenido });
-        } else {
-            // Si no existe, lo creamos por primera vez
-            const nuevoDoc = await window.addDoc(window.collection(window.db, "historial_cantadas"), {
-                contenido: contenido,
-                actualizado: new Date().toISOString()
-            });
-            idDocHistorialCantadas = nuevoDoc.id;
-        }
-        alert("¡Historial y sugerencias guardados correctamente en la nube!");
+        const docRef = window.doc(window.db, "historial_cantadas", ID_DOCUMENTO_HISTORIAL);
+        
+        // setDoc con { merge: true } crea el documento si no existe, o lo actualiza si ya existe
+        await window.setDoc(docRef, { 
+            contenido: contenido,
+            ultimaActualizacion: new Date().toISOString()
+        }, { merge: true });
+
+        alert("¡Historial guardado correctamente en la nube!");
     } catch (error) {
-        console.error("Error al guardar el historial: ", error);
+        console.error("Error al guardar: ", error);
         alert("Hubo un error al guardar en la nube.");
     }
 }
+
 
 
 function cambiarFuente(fuenteCSS) { document.documentElement.style.setProperty('--font-family', fuenteCSS); }
