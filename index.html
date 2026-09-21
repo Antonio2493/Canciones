@@ -62,29 +62,6 @@
                 </div>
             </div>
 
-            <!-- Modal para el Repertorio Semanal Libre -->
-<div id="modal-repertorio" class="modal">
-    <div class="modal-content">
-        <h3>📅 Repertorio de la Semana</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Escribe libremente las canciones, ideas o notas para esta semana. Se guarda automáticamente.</p>
-        
-        <div class="form-group" style="margin-top: 10px;">
-            <textarea id="input-repertorio-libre" rows="12" placeholder="Ej:
-Lunes:
-- Renuévame (D)
-- Cuan Grande Es Él (G)
-
-Miércoles:
-- Ensayo general con el grupo..."></textarea>
-        </div>
-
-        <div class="form-actions">
-            <button class="btn-secondary" onclick="cerrarModalRepertorio()">Cerrar</button>
-            <button class="btn-success" onclick="guardarRepertorioLibre()">Guardar en la Nube</button>
-        </div>
-    </div>
-</div>
-
             <div class="style-panel">
                 <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
                     <label for="font-select">Fuente:</label>
@@ -141,55 +118,6 @@ Miércoles:
             <button class="btn-secondary" onclick="document.getElementById('chord-helper-modal').style.display='none'">Cerrar</button>
         </div>
     </div>
-
-    <!-- Modal para Mostrar las Listas Guardadas -->
-<div id="modal-ver-listas" class="modal">
-    <div class="modal-content" style="max-width: 500px;">
-        <h3>📂 Listas Guardadas en la Nube</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Aquí puedes consultar las listas que has creado previamente.</p>
-        
-        <!-- Contenedor donde aparecerán las listas descargadas de Firestore -->
-        <div id="contenedor-listas-guardadas" style="max-height: 280px; overflow-y: auto; margin: 15px 0; text-align: left; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px;">
-            <p style="text-align:center; color: var(--text-muted); font-size: 0.9rem;">Cargando listas...</p>
-        </div>
-
-        <div class="form-actions" style="margin-top: 15px;">
-            <button class="btn-secondary" onclick="cerrarModalVerListas()">Cerrar</button>
-        </div>
-    </div>
-</div>
-    
-
-    <!-- Modal para Crear y Guardar Lista Personalizada -->
-<div id="modal-lista-personalizada" class="modal">
-    <div class="modal-content" style="max-width: 480px;">
-        <h3>📝 Crear Lista Personalizada</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Agrega canciones manualmente para esta semana y guárdalas en la nube.</p>
-        
-        <!-- Formulario para agregar una canción a la lista temporal -->
-        <div style="display: flex; gap: 8px; margin: 15px 0;">
-            <input type="text" id="input-custom-titulo" placeholder="Título de la canción" style="flex: 2; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color);">
-            <input type="text" id="input-custom-tono" placeholder="Tono (Ej: G)" style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color);">
-            <button class="btn-success" onclick="agregarCancionTemporal()" style="padding: 8px 12px;">+ Agregar</button>
-        </div>
-
-        <!-- Nombre para identificar esta lista en Firestore -->
-        <div style="margin-bottom: 12px; text-align: left;">
-            <label style="font-size: 0.85rem; color: var(--text-muted);">Nombre de la lista (Ej: Culto Domingo / Ensayo Jueves):</label>
-            <input type="text" id="input-nombre-lista" placeholder="Ej: Repertorio Domingo" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color);">
-        </div>
-
-        <!-- Contenedor donde se van listando las canciones agregadas -->
-        <div id="contenedor-items-temporales" style="max-height: 180px; overflow-y: auto; margin: 10px 0; text-align: left; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.05);">
-            <p style="text-align:center; color: var(--text-muted); font-size: 0.9rem;">No hay canciones agregadas todavía.</p>
-        </div>
-
-        <div class="form-actions" style="margin-top: 15px;">
-            <button class="btn-secondary" onclick="cerrarModalListaPersonalizada()">Cerrar</button>
-            <button class="btn-success" onclick="guardarListaPersonalizadaEnFirestore()">Guardar Lista en Firestore</button>
-        </div>
-    </div>
-</div>
 
     <!-- Modal Crear / Editar Canción -->
     <div id="song-modal" class="modal">
