@@ -371,18 +371,6 @@
                 </div>
             </div>
 
-            <!-- Botón para activar el modo interactivo con micrófono -->
-<button id="btn-modo-practica" class="btn-primary" onclick="toggleModoPractica()">
-    🎤 Activar Modo Práctica (Interactivo)
-</button>
-
-<!-- Tarjeta gigante flotante que muestra el acorde actual que debe tocar -->
-<div id="practica-overlay" style="display: none; background: var(--card-bg); border: 2px solid #38bdf8; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
-    <h3 style="margin: 0; color: #38bdf8; font-size: 14px;">ACORDE A TOCAR:</h3>
-    <div id="acorde-objetivo-actual" style="font-size: 32px; font-weight: bold; margin: 5px 0;">C</div>
-    <p id="estado-escucha" style="margin: 0; font-size: 13px; color: #9ca3af;">Escuchando el piano... Toca el acorde correcto para avanzar.</p>
-</div>
-
             <!-- PANEL DE ESTILOS Y TEMA UNIFICADO -->
             <div class="style-panel">
                 <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
@@ -489,9 +477,6 @@
 </div>
 
     <script>
-
-
-        
         let canciones = [];
         let cancionActualIndex = 0;
         let semitonosDesplazados = 0;
@@ -1013,186 +998,9 @@
                         div.innerText = lineaTexto;
                     }
                     contenedor.appendChild(div);
-                }}
-                
-                
+                }
             }
- let modoPracticaActivo = false;
-let audioContext = null;
-let analyser = null;
-let microphone = null;
-let indiceAcordeActual = 0;
-let listaAcordesDeLaCancion = [];
-
-function toggleModoPractica() {
-    modoPracticaActivo = !modoPracticaActivo;
-    const overlay = document.getElementById('practica-overlay');
-    const btn = document.getElementById('btn-modo-practica');
-
-    if (modoPracticaActivo) {
-        overlay.style.display = 'block';
-        btn.innerText = '🛑 Desactivar Modo Práctica';
-        btn.style.background = '#ef4444'; // Rojo para indicar activo
-        
-        // Extraer todos los acordes de la canción actual para la secuencia
-        extraerSecuenciaAcordes();
-        iniciarEscuchaMicrofono();
-    } else {
-        overlay.style.display = 'none';
-        btn.innerText = '🎤 Activar Modo Práctica (Interactivo)';
-        btn.style.background = ''; // Color original
-        detenerEscuchaMicrofono();
-    }
-}
-
-function extraerSecuenciaAcordes() {
-    if (canciones.length === 0) return;
-    let song = canciones[cancionActualIndex];
-    let lineas = song.letra.split('\n');
-    listaAcordesDeLaCancion = [];
-
-    // Buscamos todas las líneas de acordes y extraemos los acordes en orden
-    lineas.forEach(linea => {
-        if (esLineaDeAcordes(linea)) {
-            // Extraer palabras/acordes de la línea
-            let acordesEnLinea = linea.trim().split(/\s+/);
-            acordesEnLinea.forEach(acorde => {
-                if (acorde.length > 0) listaAcordesDeLaCancion.push(acorde);
-            });
         }
-    });
-
-    indiceAcordeActual = 0;
-    actualizarVistaObjetivo();
-}
-
-function actualizarVistaObjetivo() {
-    if (listaAcordesDeLaCancion.length > 0 && indiceAcordeActual < listaAcordesDeLaCancion.length) {
-        let acordeOriginal = listaAcordesDeLaCancion[indiceAcordeActual];
-        // Aplicar transposición si la hubiera
-        let acordeTranspuesto = transponerAcorde(acordeOriginal, semitonosDesplazados);
-        document.getElementById('acorde-objetivo-actual').innerText = acordeTranspuesto;
-    } else {
-        document.getElementById('acorde-objetivo-actual').innerText = '¡Canción Terminada! 🎉';
-    }
-}
-
-async function iniciarEscuchaMicrofono() {
-    try {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-        
-        microphone = audioContext.createMediaStreamSource(stream);
-        analyser = audioContext.createAnalyser();
-        analyser.fftSize = 2048;
-        microphone.connect(analyser);
-
-        detectarNotasLoop();
-    } catch (error) {
-        alert("No se pudo acceder al micrófono. Asegúrate de dar permisos en tu navegador.");
-        modoPracticaActivo = false;
-        document.getElementById('practica-overlay').style.display = 'none';
-    }
-}
-
-function detenerEscuchaMicrofono() {
-    if (audioContext && audioContext.state !== 'closed') {
-        audioContext.close();
-    }
-}
-
-function detectarNotasLoop() {
-    if (!modoPracticaActivo) return;
-
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Float32Array(bufferLength);
-    analyser.getFloatTimeDomainData(dataArray);
-
-    // Algoritmo simple de autocorrelación para detectar la frecuencia fundamental (Pitch)
-    let ac = autoCorrelate(dataArray, audioContext.sampleRate);
-    
-    if (ac !== -1) {
-        let notaDetectada = frecuenciaANota(ac);
-        verificarAciertoAcorde(notaDetectada);
-    }
-
-    requestAnimationFrame(detectarNotasLoop);
-}
-
-// Función matemática de autocorrelación para encontrar la frecuencia del piano
-function autoCorrelate(buffer, sampleRate) {
-    let SIZE = buffer.length;
-    let sumOfSquares = 0;
-    for (let i = 0; i < SIZE; i++) {
-        let val = buffer[i];
-        sumOfSquares += val * val;
-    }
-    let rootMeanSquare = Math.sqrt(sumOfSquares / SIZE);
-    if (rootMeanSquare < 0.01) return -1; // Muy silencioso
-
-    let r1 = 0, r2 = SIZE - 1, threshold = 0.2;
-    for (let i = 0; i < SIZE / 2; i++) {
-        if (Math.abs(buffer[i]) < threshold) { r1 = i; break; }
-    }
-    for (let i = 1; i < SIZE / 2; i++) {
-        if (Math.abs(buffer[SIZE - i]) < threshold) { r2 = SIZE - i; break; }
-    }
-
-    buffer = buffer.slice(r1, r2);
-    SIZE = buffer.length;
-
-    let c = new Array(SIZE).fill(0);
-    for (let i = 0; i < SIZE; i++) {
-        for (let j = 0; j < SIZE - i; j++) {
-            c[i] = c[i] + buffer[j] * buffer[j + i];
-        }
-    }
-
-    let d = 0;
-    while (c[d] > c[d + 1]) d++;
-    let maxval = -1, maxpos = -1;
-    for (let i = d; i < SIZE; i++) {
-        if (c[i] > maxval) {
-            maxval = c[i];
-            maxpos = i;
-        }
-    }
-    let T0 = maxpos;
-    return sampleRate / T0;
-}
-
-// Convierte frecuencia en Hertz a nombre de nota musical
-const notasFrecuenciaMap = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-function frecuenciaANota(frequency) {
-    let noteNum = 12 * (Math.log(frequency / 440) / Math.log(2));
-    let midiNote = Math.round(noteNum) + 69;
-    return notasFrecuenciaMap[midiNote % 12];
-}
-
-let ultimoAciertoTiempo = 0;
-function verificarAciertoAcorde(notaTocada) {
-    if (listaAcordesDeLaCancion.length === 0) return;
-    let acordeActualObj = listaAcordesDeLaCancion[indiceAcordeActual];
-    let notasDelAcorde = obtenerNotasAcorde(acordeActualObj).map(n => notasFrecuenciaMap[n % 12]);
-
-    // Si la nota que tocó está dentro del acorde actual
-    if (notasDelAcorde.includes(notaTocada)) {
-        let ahora = Date.now();
-        // Evitar múltiples saltos muy seguidos por el mismo sonido sostenido (debounce de 1.5 segundos)
-        if (ahora - ultimoAciertoTiempo > 1500) {
-            ultimoAciertoTiempo = ahora;
-            document.getElementById('estado-escucha').innerText = `¡Bien! Detectado ${notaTocada}. Avanzando...`;
-            document.getElementById('estado-escucha').style.color = '#10b981'; // Corregido aquí
-            
-            setTimeout(() => {
-                indiceAcordeActual++;
-                actualizarVistaObjetivo();
-                document.getElementById('estado-escucha').innerText = "Escuchando el piano... Toca el acorde correcto.";
-                document.getElementById('estado-escucha').style.color = '#9ca3af';
-            }, 800);
-        } // Llave que cierra el if del tiempo (debounce)
-    } // Llave que cierra el if de notasDelAcorde.includes
-} // Llave que cierra la función verificarAciertoAcorde
-</script>
+    </script>
 </body>
 </html>
