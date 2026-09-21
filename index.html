@@ -51,6 +51,8 @@
             <div class="management-panel">
                 <button class="btn-success" style="flex: 1;" onclick="abrirModalCrear()">➕ Nueva Canción</button>
                 <button class="btn-secondary" style="flex: 1;" onclick="abrirModalEditar()">✏️ Editar Actual</button>
+                <!-- Botón para abrir el repertorio de la semana -->
+                <button class="btn-secondary" onclick="abrirModalRepertorio()">📅 Repertorio Semanal</button>
                 <button class="btn-danger" onclick="eliminarCancionActual()">🗑️ Eliminar</button>
             </div>
 
@@ -61,6 +63,29 @@
                     <button onclick="cambiarTono(1)">+ Semitono</button>
                 </div>
             </div>
+
+            <!-- Modal para el Repertorio Semanal Libre -->
+<div id="modal-repertorio" class="modal">
+    <div class="modal-content">
+        <h3>📅 Repertorio de la Semana</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Escribe libremente las canciones, ideas o notas para esta semana. Se guarda automáticamente.</p>
+        
+        <div class="form-group" style="margin-top: 10px;">
+            <textarea id="input-repertorio-libre" rows="12" placeholder="Ej:
+Lunes:
+- Renuévame (D)
+- Cuan Grande Es Él (G)
+
+Miércoles:
+- Ensayo general con el grupo..."></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-secondary" onclick="cerrarModalRepertorio()">Cerrar</button>
+            <button class="btn-success" onclick="guardarRepertorioLibre()">Guardar en la Nube</button>
+        </div>
+    </div>
+</div>
 
             <div class="style-panel">
                 <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
