@@ -196,7 +196,60 @@ function calcularTonoActual() {
     if (nuevoIndex < 0) nuevoIndex += 12;
     return escala[nuevoIndex];
 }
+// Abrir el modal y consultar las listas directamente desde Firestore
+async function abrirModalVerListas() {
+    document.getElementById('modal-ver-listas').style.display = 'flex';
+    let contenedor = document.getElementById('contenedor-listas-guardadas');
+    contenedor.innerHTML = "<p style='text-align:center; color: var(--text-muted); font-size: 0.9rem;'>Cargando listas desde la nube...</p>";
 
+    try {
+        // Consultamos la colección "listas_personalizadas" en Firestore
+        const querySnapshot = await window.getDocs(window.collection(window.db, "listas_personalizadas"));
+        
+        if (querySnapshot.empty) {
+            contenedor.innerHTML = "<p style='text-align:center; color: var(--text-muted); font-size: 0.9rem;'>No hay listas guardadas todavía.</p>";
+            return;
+        }
+
+        contenedor.innerHTML = ""; // Limpiar antes de pintar
+
+        querySnapshot.forEach((docSnap) => {
+            let data = docSnap.data();
+            let listaDiv = document.createElement('div');
+            listaDiv.style.borderBottom = "1px solid var(--border-color)";
+            listaDiv.style.padding = "10px 0";
+            
+            // Armar las canciones de la lista
+            let cancionesHtml = "";
+            if (data.canciones && data.canciones.length > 0) {
+                cancionesHtml = "<ul style='margin: 5px 0 0 20px; font-size: 0.9rem;'>";
+                data.canciones.forEach(c => {
+                    cancionesHtml += `<li>${c.titulo} <span style="color: var(--text-muted);">(${c.tono})</span></li>`;
+                });
+                cancionesHtml += "</ul>";
+            } else {
+                cancionesHtml = "<p style='font-size: 0.85rem; color: var(--text-muted); margin: 5px 0;'>Sin canciones registradas.</p>";
+            }
+
+            listaDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong style="color: var(--text-color); font-size: 1.05rem;">📌 ${data.nombre}</strong>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">${data.fechaCreacion || ''}</span>
+                </div>
+                ${cancionesHtml}
+            `;
+            contenedor.appendChild(listaDiv);
+        });
+
+    } catch (error) {
+        console.error("Error al cargar las listas:", error);
+        contenedor.innerHTML = "<p style='text-align:center; color: #ef4444; font-size: 0.9rem;'>Error al cargar las listas desde Firestore.</p>";
+    }
+}
+
+function cerrarModalVerListas() {
+    document.getElementById('modal-ver-listas').style.display = 'none';
+}
 function esLineaDeAcordes(texto) {
     if (!texto || texto.trim() === "") return false;
     let t = texto.trim();
