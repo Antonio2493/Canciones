@@ -531,7 +531,7 @@ function verRepertorio(idDoc) {
         document.getElementById('ver-rep-contenido').innerText = rep.contenido;
         
         // Configuramos el botón de eliminar para que borre el correcto
-        document.getElementById('btn-eliminar-rep').onclick = () => eliminarRepertorio(rep.idDoc);
+        // document.getElementById('btn-eliminar-rep').onclick = () => eliminarRepertorio(rep.idDoc);
         
         cerrarModalListaRepertorios();
         document.getElementById('modal-ver-repertorio').style.display = 'flex';
