@@ -124,12 +124,11 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     margin-top: 10px;
-    padding-bottom: 10px; /* Deja espacio para que la barra de scroll no tape el borde */
+    padding-bottom: 10px;
 }
 
-/* Forzamos al piano a mantener un ancho ideal para que se aprecien bien las teclas */
 #piano-canvas {
-    min-width: 650px; 
+    min-width: 550px; /* Coincide con el ancho del canvas */
     height: auto;
     display: block;
 }
@@ -303,17 +302,18 @@
         .tab-btn.active { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
 
         .content-box {
-            font-size: var(--font-size-base);
-            line-height: 1.7;
-            background: var(--bg-color);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            overflow-x: auto;
-            min-height: 220px;
-            font-family: var(--font-family);
-            white-space: pre;
-        }
+    font-size: var(--font-size-base);
+    line-height: 1.7;
+    background: var(--bg-color);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    overflow-x: auto; /* Permite deslizar a los lados los acordes largos */
+    min-height: 220px;
+    font-family: var(--font-family);
+    white-space: pre;
+    -webkit-overflow-scrolling: touch; /* Deslizamiento suave en iPhone/Android */
+}
 
         .chord-line { line-height: 1.8; }
         .lyric-line { color: var(--text-color); margin-bottom: 8px; }
@@ -407,7 +407,7 @@
                 </div>
                 <div class="diagram-card">
                     <div class="diagram-title">🎹 Piano</div>
-                    <canvas id="piano-canvas" width="485" height="180"></canvas>
+                    <canvas id="piano-canvas" width="550" height="180"></canvas>
                 </div>
             </div>
             <button class="btn-secondary" onclick="document.getElementById('chord-helper-modal').style.display='none'">Cerrar</button>
