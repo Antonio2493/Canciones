@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MI WEB A&D - Cancionero</title>
+    
+    <!-- Enlace a la hoja de estilos externa -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- SDKs de Firebase (Firestore) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyzQ3pvXWmiTNHpI8BanWfECIZBlgQRYs",
+            authDomain: "base-de-datos-de-canciones.firebaseapp.com",
+            projectId: "base-de-datos-de-canciones",
+            storageBucket: "base-de-datos-de-canciones.firebasestorage.app",
+            messagingSenderId: "389166639712",
+            appId: "1:389166639712:web:6add84770f5892a80af105",
+            measurementId: "G-HHHMW6VZ8Z"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.updateDoc = updateDoc;
+        window.deleteDoc = deleteDoc;
+        window.doc = doc;
+        window.onSnapshot = onSnapshot;
+
+        window.dispatchEvent(new Event('firebase-ready'));
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>MI WEB A&D</h1>
+        
+        <div class="controls">
+            <div class="control-row">
+                <label for="song-select">Canción:</label>
+                <select id="song-select" onchange="cargarCancion()"></select>
+            </div>
+
+            <div class="management-panel">
+                <button class="btn-success" style="flex: 1;" onclick="abrirModalCrear()">➕ Nueva Canción</button>
+                <button class="btn-secondary" style="flex: 1;" onclick="abrirModalEditar()">✏️ Editar Actual</button>
+                <button class="btn-danger" onclick="eliminarCancionActual()">🗑️ Eliminar</button>
+            </div>
+
+            <!-- Nuevos botones para Repertorios -->
+            <div class="management-panel" style="margin-top: 10px;">
+                <button class="btn-success" style="flex: 1;" onclick="abrirModalCrearRepertorio()">📝 Crear Repertorio</button>
+                <button class="btn-secondary" style="flex: 1;" onclick="abrirModalListaRepertorios()">📂 Mis Repertorios</button>
+            </div>
+
+            <div class="transposer-controls">
+                <label>Tono actual: <span id="current-tone">C</span></label>
+                <div class="transposer-buttons">
+                    <button onclick="cambiarTono(-1)">- Semitono</button>
+                    <button onclick="cambiarTono(1)">+ Semitono</button>
+                </div>
+            </div>
+
+            <div class="style-panel">
+                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                    <label for="font-select">Fuente:</label>
+                    <select id="font-select" onchange="cambiarFuente(this.value)">
+                        <option value="'Courier New', Courier, monospace">Monoespaciada</option>
+                        <option value="'Inter', system-ui, sans-serif">Moderna</option>
+                    </select>
+                </div>
+
+                <div class="font-size-group" style="display: flex; gap: 5px; align-items: center;">
+                    <label>Tamaño:</label>
+                    <button onclick="cambiarTamano(-0.05)">A-</button>
+                    <button onclick="cambiarTamano(0.05)">A+</button>
+                </div>
+
+                <div>
+                    <button class="btn-secondary" onclick="alternarTema()">☀️ / 🌙 Tema</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="song-header">
+            <h2 id="title" class="song-title">Cargando de la nube...</h2>
+            <div id="artist" class="song-artist"></div>
+        </div>
+
+        <div class="tabs-container">
+            <button id="btn-acordes" class="tab-btn active" onclick="cambiarVista('acordes')">Acordes</button>
+            <button id="btn-guitarra" class="tab-btn" onclick="cambiarVista('guitarra')">🎸 Guitarra</button>
+            <button id="btn-piano" class="tab-btn" onclick="cambiarVista('piano')">🎹 Piano</button>
+        </div>
+        
+        <div id="content-display" class="content-box">Conectando con Firestore...</div>
+    </div>
+
+    <!-- Modal Ayuda Acorde (Guitarra / Piano) -->
+    <div id="chord-helper-modal" class="modal" onclick="cerrarModalAcorde(event)">
+        <div class="chord-modal-box" onclick="event.stopPropagation()">
+            <h2 id="helper-chord-name" class="chord-modal-title">C</h2>
+            <div class="diagrams-container">
+                <div class="diagram-card">
+                    <div class="diagram-title">🎸 Guitarra</div>
+                    <canvas id="guitar-canvas" width="180" height="200"></canvas>
+                </div>
+                <div class="diagram-card">
+                    <div class="diagram-title">🎹 Piano</div>
+                    <div class="piano-scroll-container">
+                        <canvas id="piano-canvas" width="550" height="180"></canvas>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-secondary" onclick="document.getElementById('chord-helper-modal').style.display='none'">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Modal Crear Repertorio -->
+    <div id="modal-crear-repertorio" class="modal">
+        <div class="modal-content">
+            <h3>Nuevo Repertorio</h3>
+            <div class="form-group">
+                <label>Nombre del Repertorio:</label>
+                <input type="text" id="input-rep-titulo" placeholder="Ej: Culto Domingo / Ensayo Jueves">
+            </div>
+            <div class="form-group">
+                <label>Contenido (Canciones, notas, orden):</label>
+                <textarea id="input-rep-contenido" rows="10" placeholder="Escribe aquí tu lista de canciones..."></textarea>
+            </div>
+            <div class="form-actions">
+                <button class="btn-secondary" onclick="cerrarModalRepertorio()">Cancelar</button>
+                <button class="btn-success" onclick="guardarRepertorioNube()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Lista de Repertorios -->
+    <div id="modal-lista-repertorios" class="modal">
+        <div class="modal-content">
+            <h3>Mis Repertorios Guardados</h3>
+            <div id="lista-repertorios-container" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">
+                <!-- Se llena automáticamente con JavaScript -->
+            </div>
+            <div class="form-actions">
+                <button class="btn-secondary" onclick="cerrarModalListaRepertorios()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver un Repertorio Específico -->
+    <div id="modal-ver-repertorio" class="modal">
+        <div class="modal-content">
+            <h3 id="ver-rep-titulo">Título del Repertorio</h3>
+            <div class="form-group">
+                <pre id="ver-rep-contenido" style="white-space: pre-wrap; background: var(--bg-color, #f4f4f4); padding: 15px; border-radius: 5px; max-height: 400px; overflow-y: auto; font-family: inherit; font-size: 1.1rem; border: 1px solid #ccc;"></pre>
+            </div>
+            <div class="form-actions">
+                <button class="btn-danger" id="btn-eliminar-rep" onclick="">🗑️ Eliminar</button>
+                <button class="btn-secondary" onclick="cerrarModalVerRepertorio()">Volver a la lista</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Crear / Editar Canción -->
+    <div id="song-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">Nueva Canción</h3>
+            <input type="hidden" id="edit-id" value="">
+            
+            <div class="form-group">
+                <label>Título:</label>
+                <input type="text" id="input-titulo" placeholder="Ej: Renuévame">
+            </div>
+
+            <div class="form-group">
+                <label>Artista / Intérprete:</label>
+                <input type="text" id="input-artista" placeholder="Ej: Marcos Witt">
+            </div>
+
+            <div class="form-group">
+                <label>Tono Original (Ej: D, G, Am):</label>
+                <input type="text" id="input-tono" placeholder="D">
+            </div>
+
+            <div class="form-group">
+                <label>Letra y Acordes:</label>
+                <textarea id="input-letra" rows="10" placeholder="Acordes arriba, letra abajo..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Tablatura de Guitarra (Opcional):</label>
+                <textarea id="input-guitarra" rows="2" placeholder="e|-------------------|"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Notas de Piano (Opcional):</label>
+                <textarea id="input-piano" rows="2" placeholder="D - A - Bm"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-success" onclick="guardarCancionNube()">Guardar en la Nube</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enlace al archivo JavaScript externo -->
+    <script src="app.js"></script>
+</body>
+</html>
