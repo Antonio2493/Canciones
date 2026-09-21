@@ -53,6 +53,13 @@
                 <button class="btn-secondary" style="flex: 1;" onclick="abrirModalEditar()">✏️ Editar Actual</button>
                 <button class="btn-danger" onclick="eliminarCancionActual()">🗑️ Eliminar</button>
             </div>
+            
+            <!-- NUEVOS BOTONES PARA HISTORIAL / SUGERENCIAS -->
+<div class="management-panel" style="margin-top: 10px; background-color: rgba(67, 97, 238, 0.05); padding: 10px; border-radius: 8px;">
+    <button class="btn-success" style="flex: 1;" onclick="abrirModalRegistrarCancionCantada()">➕ Registrar Cantada</button>
+    <button class="btn-secondary" style="flex: 1;" onclick="abrirModalHistorialCantadas()">📜 Ver Historial / Sugerencias</button>
+</div>
+
 
             <!-- Nuevos botones para Repertorios -->
             <div class="management-panel" style="margin-top: 10px;">
@@ -122,6 +129,25 @@
             <button class="btn-secondary" onclick="document.getElementById('chord-helper-modal').style.display='none'">Cerrar</button>
         </div>
     </div>
+    
+        <!-- Modal Historial y Sugerencias de Canciones Cantadas -->
+    <div id="modal-historial-cantadas" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <h3>Historial de Canciones Cantadas & Sugerencias</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">
+                Usa esta lista amplia para revisar qué se ha tocado recientemente y sugerir ideas para futuros repertorios.
+            </p>
+            <div class="form-group">
+                <!-- Caja de texto grande como pediste -->
+                <textarea id="input-historial-gigante" rows="14" placeholder="Cargando historial de canciones..." style="font-family: inherit; font-size: 1rem; line-height: 1.5;"></textarea>
+            </div>
+            <div class="form-actions">
+                <button class="btn-success" onclick="guardarHistorialCantadasNube()">💾 Guardar Cambios en la Nube</button>
+                <button class="btn-secondary" onclick="cerrarModalHistorialCantadas()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Modal Crear Repertorio -->
     <div id="modal-crear-repertorio" class="modal">
