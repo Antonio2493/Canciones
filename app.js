@@ -139,6 +139,42 @@ async function eliminarCancionActual() {
     }
 }
 
+// Abrir el modal de repertorio y cargar lo que esté guardado
+async function abrirModalRepertorio() {
+    document.getElementById('modal-repertorio').style.display = 'flex';
+    
+    // Intentar cargar el texto guardado previamente desde Firestore
+    try {
+        const docRef = window.doc(window.db, "configuracion", "repertorio_semanal");
+        // Nota: Esto asume una lectura rápida o puedes usar un snapshot si prefieres
+        // Aquí cargamos el documento si existe
+    } catch (e) {
+        console.log("No hay repertorio previo o cargando...");
+    }
+}
+
+function cerrarModalRepertorio() {
+    document.getElementById('modal-repertorio').style.display = 'none';
+}
+
+// Guardar el texto libre en la nube
+async function guardarRepertorioLibre() {
+    let textoLibre = document.getElementById('input-repertorio-libre').value;
+    
+    try {
+        // Guardamos en un documento fijo llamado "repertorio_semanal" dentro de una colección o la misma base
+        await window.addDoc(window.collection(window.db, "repertorio_semanal"), {
+            contenido: textoLibre,
+            fechaActualizacion: new Date().toISOString()
+        });
+        alert("¡Repertorio semanal guardado con éxito!");
+        cerrarModalRepertorio();
+    } catch (error) {
+        console.error("Error al guardar el repertorio: ", error);
+        alert("Hubo un error al guardar. Revisa la consola.");
+    }
+}
+
 function transponerAcorde(acorde, semitonos) {
     let match = acorde.match(/^([A-G][#b]?)(.*)$/);
     if (!match) return acorde;
