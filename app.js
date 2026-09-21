@@ -139,55 +139,6 @@ async function eliminarCancionActual() {
     }
 }
 
-// 1. Abrir el modal y cargar inmediatamente lo que está guardado en Firestore
-async function abrirModalRepertorio() {
-    document.getElementById('modal-repertorio').style.display = 'flex';
-    let textarea = document.getElementById('input-repertorio-libre');
-    textarea.value = "Cargando repertorio...";
-
-    try {
-        // Usamos un ID fijo llamado "repertorio_semanal" para no crear documentos infinitos
-        const docRef = window.doc(window.db, "configuracion", "repertorio_semanal");
-        const docSnap = await window.getDoc(docRef);
-
-        if (docSnap.exists()) {
-            // Si ya hay algo guardado, lo colocamos en el cuadro de texto
-            textarea.value = docSnap.data().contenido || "";
-        } else {
-            // Si está vacío por primera vez
-            textarea.value = "";
-        }
-    } catch (error) {
-        console.error("Error al cargar el repertorio:", error);
-        textarea.value = "";
-        alert("Hubo un error al cargar el repertorio desde la nube.");
-    }
-}
-
-function cerrarModalRepertorio() {
-    document.getElementById('modal-repertorio').style.display = 'none';
-}
-
-// 2. Guardar o actualizar siempre sobre el mismo documento único
-async function guardarRepertorioLibre() {
-    let textoLibre = document.getElementById('input-repertorio-libre').value;
-    
-    try {
-        // setDoc sobrescribe o crea el documento único "repertorio_semanal" en la colección "configuracion"
-        const docRef = window.doc(window.db, "configuracion", "repertorio_semanal");
-        await window.setDoc(docRef, {
-            contenido: textoLibre,
-            fechaActualizacion: new Date().toISOString()
-        });
-        
-        alert("¡Repertorio semanal actualizado con éxito!");
-        cerrarModalRepertorio();
-    } catch (error) {
-        console.error("Error al guardar el repertorio: ", error);
-        alert("Hubo un error al guardar. Revisa la consola.");
-    }
-}
-
 function transponerAcorde(acorde, semitonos) {
     let match = acorde.match(/^([A-G][#b]?)(.*)$/);
     if (!match) return acorde;
@@ -208,71 +159,6 @@ function calcularTonoActual() {
     let nuevoIndex = (index + semitonosDesplazados) % 12;
     if (nuevoIndex < 0) nuevoIndex += 12;
     return escala[nuevoIndex];
-}
-// Abrir el modal y consultar las listas directamente desde Firestore
-async function abrirModalVerListas() {
-    document.getElementById('modal-ver-listas').style.display = 'flex';
-    let contenedor = document.getElementById('contenedor-listas-guardadas');
-    contenedor.innerHTML = "<p style='text-align:center; color: var(--text-muted); font-size: 0.9rem;'>Cargando listas desde la nube...</p>";
-
-    try {
-        // Consultamos la colección "listas_personalizadas" en Firestore
-        const querySnapshot = await window.getDocs(window.collection(window.db, "listas_personalizadas"));
-        
-        if (querySnapshot.empty) {
-            contenedor.innerHTML = "<p style='text-align:center; color: var(--text-muted); font-size: 0.9rem;'>No hay listas guardadas todavía.</p>";
-            return;
-        }
-
-        contenedor.innerHTML = ""; // Limpiar antes de pintar
-
-        querySnapshot.forEach((docSnap) => {
-            let data = docSnap.data();
-            let listaDiv = document.createElement('div');
-            listaDiv.style.borderBottom = "1px solid var(--border-color)";
-            listaDiv.style.padding = "10px 0";
-            
-            // Armar las canciones de la lista
-            let cancionesHtml = "";
-            if (data.canciones && data.canciones.length > 0) {
-                cancionesHtml = "<ul style='margin: 5px 0 0 20px; font-size: 0.9rem;'>";
-                data.canciones.forEach(c => {
-                    cancionesHtml += `<li>${c.titulo} <span style="color: var(--text-muted);">(${c.tono})</span></li>`;
-                });
-                cancionesHtml += "</ul>";
-            } else {
-                cancionesHtml = "<p style='font-size: 0.85rem; color: var(--text-muted); margin: 5px 0;'>Sin canciones registradas.</p>";
-            }
-
-            listaDiv.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong style="color: var(--text-color); font-size: 1.05rem;">📌 ${data.nombre}</strong>
-                    <span style="font-size: 0.75rem; color: var(--text-muted);">${data.fechaCreacion || ''}</span>
-                </div>
-                ${cancionesHtml}
-            `;
-            contenedor.appendChild(listaDiv);
-        });
-
-    } catch (error) {
-        console.error("Error al cargar las listas:", error);
-        contenedor.innerHTML = "<p style='text-align:center; color: #ef4444; font-size: 0.9rem;'>Error al cargar las listas desde Firestore.</p>";
-    }
-}
-
-function cerrarModalVerListas() {
-    document.getElementById('modal-ver-listas').style.display = 'none';
-}
-function esLineaDeAcordes(texto) {
-    if (!texto || texto.trim() === "") return false;
-    let t = texto.trim();
-    if (t.startsWith('(') || t.startsWith('[')) return false;
-    let palabras = t.split(/\s+/);
-    if (palabras.length === 0) return false;
-    let validos = 0;
-    let regexAcorde = /^[A-G][#b]?(m|maj|min|dim|aug|sus|add)?[0-9]*(\/[A-G][#b]?)?$/i;
-    for (let p of palabras) { if (regexAcorde.test(p)) validos++; }
-    return (validos / palabras.length) >= 0.6;
 }
 
 function formatearLineaAcordesInteractiva(linea, semitonos) {
