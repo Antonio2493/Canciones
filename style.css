@@ -1,0 +1,310 @@
+:root {
+            --bg-color: #0b0f19;
+            --card-bg: #111827;
+            --text-color: #f3f4f6;
+            --muted-text: #9ca3af;
+            --chord-color: #38bdf8;
+            --chord-bg: rgba(56, 189, 248, 0.1);
+            --chord-hover-bg: rgba(56, 189, 248, 0.25);
+            --accent-color: #0284c7;
+            --accent-hover: #0369a1;
+            --border-color: #1f2937;
+            --font-family: 'Courier New', Courier, monospace; 
+            --ui-font: 'Inter', system-ui, sans-serif; 
+            --font-size-base: 1.05rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* TEMA CLARO */
+        [data-theme="light"] {
+            --bg-color: #ffffff;
+            --card-bg: #f3f4f6;
+            --text-color: #111827;
+            --muted-text: #4b5563;
+            --chord-color: #0284c7;
+            --chord-bg: rgba(2, 132, 199, 0.1);
+            --chord-hover-bg: rgba(2, 132, 199, 0.25);
+            --border-color: #d1d5db;
+        }
+
+        body {
+            font-family: var(--ui-font);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            width: 100%;
+            overflow-x: auto; /* Permite hacer scroll horizontal en celulares */
+            max-width: 750px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--muted-text);
+        }
+
+        /* Contenedor que activa la barra de desplazamiento horizontal solo cuando es necesario */
+.piano-scroll-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 5px;
+    padding-bottom: 5px;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch; /* Clave absoluta para scroll fluido en iOS/Android */
+    display: block;
+    white-space: nowrap;
+}
+
+#piano-canvas {
+   min-width: 580px !important;
+    width: 580px !important;
+    height: 180px;
+    display: block;
+}
+
+        select, input, textarea {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.95rem;
+            outline: none;
+            font-family: var(--ui-font);
+        }
+
+        select:focus, input:focus, textarea:focus { border-color: var(--chord-color); }
+
+        .transposer-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .transposer-buttons { display: flex; gap: 8px; }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:hover { background-color: var(--accent-hover); }
+        button:active { transform: scale(0.96); }
+
+        .btn-success { background-color: #10b981; }
+        .btn-success:hover { background-color: #059669; }
+        .btn-danger { background-color: #ef4444; }
+        .btn-danger:hover { background-color: #dc2626; }
+        .btn-secondary { background-color: #4b5563; }
+        .btn-secondary:hover { background-color: #374151; }
+
+        #current-tone { font-size: 1.1rem; font-weight: bold; color: var(--chord-color); }
+
+        .style-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .font-size-group { display: flex; align-items: center; gap: 8px; }
+        .management-panel { display: flex; gap: 10px; margin-top: 5px; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 650px;
+            border: 1px solid var(--border-color);
+            max-height: 90vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .modal-content h3 { margin-top: 0; color: var(--text-color); text-align: center; }
+
+        .chord-modal-box {
+            background: var(--card-bg);
+    padding: 20px;
+    border-radius: 16px;
+    max-width: 650px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+    box-sizing: border-box;
+    width: 100%;
+    overflow-x: visible; /* Evita que bloquee el scroll interno */
+        }
+
+        .chord-modal-title { font-size: 1.8rem; color: var(--chord-color); font-weight: bold; margin: 0; }
+
+        .diagrams-container {
+           display: flex;
+    gap: 15px;
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto; /* Permite deslizar si los diagramas juntos no caben */
+    padding-bottom: 10px;
+        }
+
+        .diagram-card {
+            background: var(--bg-color);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .diagram-title { font-size: 0.85rem; font-weight: bold; color: var(--muted-text); margin-bottom: 8px; }
+
+        .clickable-chord {
+            color: var(--chord-color);
+            font-weight: bold;
+            background-color: var(--chord-bg);
+            padding: 1px 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-block;
+        }
+
+        .clickable-chord:hover { background-color: var(--chord-hover-bg); text-decoration: underline; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-size: 0.85rem; }
+        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+
+        .song-header { text-align: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .song-title { color: var(--text-color); font-size: 1.4rem; margin: 0 0 5px 0; }
+        .song-artist { font-size: 0.95rem; color: var(--muted-text); margin: 0; }
+
+        .tabs-container { display: flex; gap: 8px; margin-bottom: 15px; }
+        .tab-btn {
+            flex: 1;
+            background-color: var(--bg-color);
+            color: var(--muted-text);
+            border: 1px solid var(--border-color);
+            padding: 10px 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .tab-btn.active { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
+
+        .content-box {
+    font-size: var(--font-size-base);
+    line-height: 1.7;
+    background: var(--bg-color);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    overflow-x: auto; /* Permite deslizar a los lados los acordes largos */
+    min-height: 220px;
+    font-family: var(--font-family);
+    white-space: pre;
+    -webkit-overflow-scrolling: touch; /* Deslizamiento suave en iPhone/Android */
+}
+
+        .chord-line { line-height: 1.8; }
+        .lyric-line { color: var(--text-color); margin-bottom: 8px; }
+        .song-section {
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--muted-text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .instrument-view { 
+            font-family: var(--font-family); 
+            font-size: var(--font-size-base); 
+            white-space: pre; 
+            color: var(--chord-color); 
+            line-height: 1.6; 
+        }
