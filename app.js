@@ -532,15 +532,17 @@ async function guardarEnListaCompartida() {
     alert("¡Canción agregada a la lista pública!");
 }
 
+function cerrarModalAgregarCancion() {
+    cerrarModalUniversal('modal-agregar-cancion');
+}
+
 function abrirModalVerListaCanciones() {
-    abrirModalUniversal('modal-ver-lista-canciones');
+    abrirModalUniversal('modal-ver-lista-canciones'); // Se abre y bloquea el fondo del celular
     renderizarListaCanciones();
-    document.getElementById('modal-ver-lista-canciones').style.display = 'flex';
 }
 
 function cerrarModalVerListaCanciones() {
-    cerrarModalUniversal('modal-ver-lista-canciones');
-    document.getElementById('modal-ver-lista-canciones').style.display = 'none';
+    cerrarModalUniversal('modal-ver-lista-canciones'); // Se cierra y devuelve el scroll al celular
 }
 
 function renderizarListaCanciones() {
