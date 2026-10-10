@@ -623,7 +623,7 @@ async function eliminarCancionDeLista(idDoc) {
 }
 
 // ==========================================
-// LÓGICA PARA REPERTORIOS (Actualizada con Edición y Contraseña)
+// LÓGICA PARA REPERTORIOS
 // ==========================================
 
 let repertorioActualEditId = null; // Variable para rastrear el ID que se está editando
