@@ -482,14 +482,19 @@ function sincronizarListaCanciones() {
             });
         });
         
-        // Ordenamos de forma segura
+        // ORDENAMIENTO: Primero agrupa por categoría y luego ordena alfabéticamente por título
         listaCancionesCompartida.sort((a, b) => {
-            let catA = a.categoria;
-            let catB = b.categoria;
+            let catA = a.categoria || "Adoración";
+            let catB = b.categoria || "Adoración";
+            
             if (catA !== catB) {
-                return catA.localeCompare(catB);
+                return catA.localeCompare(catB, 'es', { sensitivity: 'base' });
             }
-            return b.fecha - a.fecha;
+            
+            // Si la categoría es la misma, se ordenan alfabéticamente por título (A-Z)
+            let tituloA = a.titulo || "";
+            let tituloB = b.titulo || "";
+            return tituloA.localeCompare(tituloB, 'es', { sensitivity: 'base' });
         });
 
         // VERIFICACIÓN SEGURA: Primero comprobamos que el modal exista y luego su estilo
